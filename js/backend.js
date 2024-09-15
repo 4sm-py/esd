@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const TOKEN = process.env.TOKEN;
+const TOKEN = process.env.TOKEN; // Token stored as an environment variable
 
 app.get('/api/getToken', (req, res) => {
     res.json({ token: TOKEN });
