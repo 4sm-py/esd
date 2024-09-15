@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const domain = window.location.hostname;
 
     // Telegram bot token and chat ID (replace these with your actual bot token and chat ID)
-const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN; // This will pull from the environment
+    const telegramBotToken = '7188437966:AAFNoMXVVFbKoHpg7ig1RXVYsgIOJaGJXz4';
     const chatId = '5074699192';
 
     try {
